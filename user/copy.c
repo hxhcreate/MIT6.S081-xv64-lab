@@ -12,7 +12,10 @@ int main()
         int n = read(0, buf, sizeof buf);
         if (n <= 0)
             break;
-        write(1, buf, n);
+        if (write(1, buf, n) == -1) {
+            fprintf(2, "cat: write error\n");
+            exit(1);
+        }
     }
 
     exit(0);
