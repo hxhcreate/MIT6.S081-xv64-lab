@@ -3,8 +3,7 @@
 #include "user/user.h"
 #include "kernel/fs.h"
 
-char*
-fmtname(char *path)
+char* fmtname(char *path)
 {
     static char buf[DIRSIZ+1];
     char *p;
@@ -27,19 +26,20 @@ void find(char *path, char *filename){
     
     int fd;
     struct dirent de;
-    struct stat st;
+    struct stat st;  // file structure type
 
+    // open dir 
     if((fd = open(path, 0)) < 0){
         fprintf(2, "find: cannot open %s\n", path);
         exit(1);
     }
 
-    if(fstat(fd, &st) < 0){
+    if(fstat(fd, &st) < 0){  // place file info into *st  -1 failed 0 right
         fprintf(2, "find: cannot stat %s\n", path);
         close(fd);
         exit(1);
     }
-
+    // read dir into dirent to get info
     if (read(fd, &de, sizeof(de)) != sizeof(de)){
         exit(1);
     }
@@ -53,23 +53,23 @@ void find(char *path, char *filename){
             break;
 
         case T_DIR:
-            // dir
+            // dir length
             if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
                 fprintf(2, "ls: path too long\n");
                 break;
             }
             // buf next path
             strcpy(buf, path);
-            p = buf + strlen(buf);
+            p = buf + strlen(buf);  // p points to the last of buf
             *p++ = '/';
             while(read(fd, &de, sizeof(de)) == sizeof(de)){
-                if((de.inum == 0) || (strcmp(de.name, ".") == 0) || (strcmp(de.name, "..") == 0)){
+                if((de.inum == 0) || (strcmp(de.name, ".") == 0) || (strcmp(de.name, "..") == 0)){  // cases to jump out of loop
                     continue;
                 }
                 memmove(p, de.name, DIRSIZ);
                 p[DIRSIZ] = 0;
                 // get file descriptor
-                if(stat(buf, &st) < 0){
+                if(stat(buf, &st) < 0){  // buf is file path
                     fprintf(2, "find: cannot stat %s\n", buf);
                     continue;
                 }

@@ -1,7 +1,9 @@
 #include "kernel/types.h"
 #include "user/user.h"
+#include "kernel/stat.h"
+#include "kernel/fs.h"
 
-
+/*
 int main() {
     int p[2];
     pipe(p);
@@ -20,5 +22,13 @@ int main() {
         write(p[1], "parent\n", 7);
         
     }
+    exit(0);
+}*/
+
+int main () {
+    struct dirent de; // file structure type
+    int fd = open("copy", 0);
+    read(fd, &de, sizeof(struct dirent));
+    printf("%d;%s", de.inum, de.name);
     exit(0);
 }
