@@ -22,7 +22,7 @@ char* fmtname(char *path)
 }
 
 void find(char *path, char *filename){
-    char buf[512], *p;
+    char buf[512], *p; // file max_length no more than buf[512]
     
     int fd;
     struct dirent de;
@@ -39,14 +39,15 @@ void find(char *path, char *filename){
         close(fd);
         exit(1);
     }
-    // read dir into dirent to get info
+    /*
     if (read(fd, &de, sizeof(de)) != sizeof(de)){
         exit(1);
-    }
+    }*/
 
     switch(st.type){
         case T_FILE:
             // file
+            // in case of the dir and file have the same name!!! maybe into this
             if (strcmp(de.name, filename) == 0){
                 printf("%s/%s\n", path, filename);
             }
@@ -60,8 +61,9 @@ void find(char *path, char *filename){
             }
             // buf next path
             strcpy(buf, path);
-            p = buf + strlen(buf);  // p points to the last of buf
+            p = buf + strlen(buf);  // 
             *p++ = '/';
+             // if fd is a dir, this will read a sequence of de contain all the file in this dir
             while(read(fd, &de, sizeof(de)) == sizeof(de)){
                 if((de.inum == 0) || (strcmp(de.name, ".") == 0) || (strcmp(de.name, "..") == 0)){  // cases to jump out of loop
                     continue;
@@ -79,7 +81,7 @@ void find(char *path, char *filename){
                         printf("%s\n", buf);
                     }
                 }else if (st.type == T_DIR){
-                    // 如果当前目录是文件夹, 则递归处理, buf为下一级目录
+                    // recursive here
                     find(buf, filename);
                 }
             }
