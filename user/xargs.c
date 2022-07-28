@@ -50,7 +50,7 @@ int readLine(char **pars, int i){
         }
         // k++
         buf[k++] = 0;
-        copy(&pars[i], buf + l);
+        my_copy(&pars[i], buf + l);
         i++;
     }
 
