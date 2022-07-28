@@ -3,7 +3,7 @@
 #include "kernel/param.h"
 #include "user/user.h"
 
-void copy(char **p1, char *p2){
+void my_copy(char **p1, const char *p2){
     *p1 = malloc(strlen(p2) + 1);
     strcpy(*p1, p2);
 }
@@ -13,9 +13,8 @@ int readLine(char **pars, int i){
     int d = 1024;
     char buf[d];
     int j = 0;
-    // 读取1行
+    // read one line
     while (read(0, buf + j, 1)){
-        // 按行划分
         if (buf[j] == '\n'){
             buf[j] = 0;
             break;
@@ -27,7 +26,7 @@ int readLine(char **pars, int i){
         }
     }
     
-    // 没有读取内容
+    // no read, then return
     if (j == 0){
         return -1;
     }
@@ -40,17 +39,16 @@ int readLine(char **pars, int i){
             exit(1);
         }
         // '   abc   sdf'
-        // 忽略
         while ((k < j) && (buf[k] == ' ')){
             k++;
         }
-        // 起始位置
+        //start
         int l = k;
-        // 保留字符
+        // reserved char
         while ((k < j) && (buf[k] != ' ')){
             k++;
         }
-        // 注意需要k++
+        // k++
         buf[k++] = 0;
         copy(&pars[i], buf + l);
         i++;
@@ -63,11 +61,16 @@ int main(int argc, char *argv[]){
     if (argc < 2){
         printf("Please enter more parameters!\n");
         exit(1);
-    }else{
+    }
+    else if (argc - 1 > MAXARG){
+        fprintf(2, "Too much parameters!\n");
+        exit(1);
+    }
+    else{
         int i;
-        char *pars[MAXARG];
+        char *pars[MAXARG]; // pointers array
         for (i = 1; i < argc; i++){
-            copy(&pars[i - 1], argv[i]);
+            my_copy(&pars[i - 1], argv[i]);  // pass address to malloc and copy memory
         }
         
         int end;
