@@ -656,3 +656,16 @@ procdump(void)
     printf("\n");
   }
 }
+
+// get num of inactive process
+int
+nproc_active(void)
+{
+  int i;
+  int num = 0;
+  for (i=0; i<NPROC; i++) {
+    if (proc[i].state != UNUSED)
+      num++;
+  }
+  return num;
+}

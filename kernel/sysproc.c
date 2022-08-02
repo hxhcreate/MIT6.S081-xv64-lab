@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
 
 uint64
 sys_exit(void)
@@ -100,9 +101,24 @@ sys_uptime(void)
 uint64 
 sys_trace(void) {
   int n;
-  if (argint(0, &n) < 0) 
+  if (argint(0, &n) < 0) // read from p->trapframe->a0 
     return -1;
   myproc() -> syscallnum = n;
   return 0;
+}
 
+// add sysyinfo call
+uint64 
+sys_sysinfo(void) {
+  uint64 sysinfoaddr;
+  struct sysinfo si;
+
+  if(argaddr(0, &sysinfoaddr) < 0)  // read from p->trapframe->a0
+    return -1;
+  si.freemem = freememsize();
+  si.nproc = nproc_active();
+  if(copyout(myproc()->pagetable, sysinfoaddr, (char *)&si, sizeof(si)) < 0) // copy out the sysinfo struct si from kernel space to user space
+    return -1;
+  return 0;
+  
 }
