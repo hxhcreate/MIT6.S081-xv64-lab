@@ -288,6 +288,8 @@ fork(void)
     return -1;
   }
   np->sz = p->sz;
+  np->syscallnum = p->syscallnum;  // copy syscallnum from parent to child
+
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
