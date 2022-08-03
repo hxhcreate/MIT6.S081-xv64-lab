@@ -84,14 +84,14 @@ walk(pagetable_t pagetable, uint64 va, int alloc)
     panic("walk");
 
   for(int level = 2; level > 0; level--) {
-    pte_t *pte = &pagetable[PX(level, va)];
-    if(*pte & PTE_V) {
-      pagetable = (pagetable_t)PTE2PA(*pte);
-    } else {
-      if(!alloc || (pagetable = (pde_t*)kalloc()) == 0)
+    pte_t *pte = &pagetable[PX(level, va)];  // get the right PTE
+    if(*pte & PTE_V) { // isvalid
+      pagetable = (pagetable_t)PTE2PA(*pte);  // 44bit PPN and 12bit 0 to get the next level
+    } else {  // not valid
+      if(!alloc || (pagetable = (pde_t*)kalloc()) == 0) // some exceptions
         return 0;
-      memset(pagetable, 0, PGSIZE);
-      *pte = PA2PTE(pagetable) | PTE_V;
+      memset(pagetable, 0, PGSIZE);  // alloc a new empty pagetable
+      *pte = PA2PTE(pagetable) | PTE_V; // seems no use????
     }
   }
   return &pagetable[PX(0, va)];
