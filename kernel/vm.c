@@ -60,7 +60,7 @@ kvminit(void)
 // and enable paging.
 void
 kvminithart()
-{
+{  
   w_satp(MAKE_SATP(kernel_pagetable));
   sfence_vma();
 }
