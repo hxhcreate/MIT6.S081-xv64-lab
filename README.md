@@ -53,7 +53,7 @@ solutions are the follows：
   ```
 * and run
   ```shell
-  gdb-muiltharch
+  gdb-multiarch
   ```
 
   
